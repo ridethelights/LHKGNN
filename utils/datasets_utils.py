@@ -59,7 +59,7 @@ class HeterophilyDataset(InMemoryDataset):
 
         super(HeterophilyDataset, self).__init__(root, transform, pre_transform)
 
-        # 处理数据时直接从torch.load中获取数据对象
+   
         self.data = torch.load(self.processed_paths[0])
 
     @property
@@ -82,40 +82,39 @@ class HeterophilyDataset(InMemoryDataset):
         pass
 
     def process(self):
-        # 加载 'chameleon' 和 'squirrel' 数据集的未处理和处理后的版本
+
         if self.name in ['chameleon', 'squirrel']:
-            # 加载未处理版本（不做预处理）
+      
             unprocessed_data = WikipediaNetwork(
                 root=self.root, name=self.name, geom_gcn_preprocess=False, transform=None
             )
-            # 确保 unprocessed_data 是一个 Data 对象
-            unprocessed_data = unprocessed_data[0]  # 获取第一个 Data 对象
+         
+            unprocessed_data = unprocessed_data[0]  
 
-            # 加载处理过的版本（做了预处理）
+           
             processed_data = WikipediaNetwork(
                 root=self.root, name=self.name, geom_gcn_preprocess=True, transform=None
             )
-            # 确保 processed_data 是一个 Data 对象
-            processed_data = processed_data[0]  # 获取第一个 Data 对象
+        
+            processed_data = processed_data[0]  
 
-            # 合并未处理版本和处理过版本的边索引
+        
             unprocessed_edge_index = unprocessed_data.edge_index
             processed_edge_index = processed_data.edge_index
             features = processed_data.x
             labels = processed_data.y
 
-            # 移除自循环并转换为无向图
+          
             unprocessed_edge_index, _ = remove_self_loops(unprocessed_edge_index)
             unprocessed_edge_index = to_undirected(unprocessed_edge_index)
 
-            # 将清理后的边索引赋值给处理过的版本
             processed_data.edge_index = unprocessed_edge_index
 
-            # 创建 Data 对象
+      
             data = Data(x=features, edge_index=processed_data.edge_index, y=labels)
 
         else:
-            # 对于其他数据集，按常规方式处理
+      
             with open(self.raw_data_dir, 'rb') as f:
                 data = pickle.load(f)
 
@@ -123,24 +122,24 @@ class HeterophilyDataset(InMemoryDataset):
             features = data['features']
             labels = data['labels']
 
-            # 移除自循环并转换为无向图
+       
             edge_index, _ = remove_self_loops(edge_index)
             edge_index = to_undirected(edge_index)
 
-            # 创建 Data 对象
+ 
             data = Data(x=features, edge_index=edge_index, y=labels)
 
-        # 应用预转换（如果有）
+     
         if self.pre_transform is not None:
             data = self.pre_transform(data)
 
-        # 可选：如果需要，显式应用 NormalizeFeatures 转换
+  
         data = T.NormalizeFeatures()(data)
 
-        # 保存处理后的数据为 Data 对象
+    
         torch.save(data, self.processed_paths[0])
 
-        # 返回 Data 对象
+  
         return data
 
 
@@ -155,11 +154,6 @@ class WebKB(InMemoryDataset):
     "Geom-GCN: Geometric Graph Convolutional Networks"
     paper.
 
-    Args:
-        root (string): Root directory where the dataset should be saved.
-        name (string): The name of the dataset ("Cornell", "Texas", "Washington", "Wisconsin").
-        transform (callable, optional): A function/transform that takes in a `torch_geometric.data.Data` object and returns a transformed version. The data object will be transformed before every access. (default: None)
-        pre_transform (callable, optional): A function/transform that takes in a `torch_geometric.data.Data` object and returns a transformed version. The data object will be transformed before being saved to disk. (default: None)
     """
 
     url = ('https://raw.githubusercontent.com/graphdml-uiuc-jlu/geom-gcn/'
@@ -194,7 +188,7 @@ class WebKB(InMemoryDataset):
             download_url(f'{self.url}/{self.name}/{name}', self.raw_dir)
 
     def process(self):
-        # Load node features and labels
+  
         with open(self.raw_paths[0], 'r') as f:
             data = f.read().split('\n')[1:-1]
             x = [[float(v) for v in r.split('\t')[1].split(',')] for r in data]
@@ -232,7 +226,7 @@ def get_dataset(name):
     if name not in allowed_datasets:
         raise ValueError(f"Dataset {name} is not supported. Please select from {allowed_datasets}.")
 
-    # 根目录保持不变
+
     root_path = '../data/'
     if name in ['cora', 'citeseer', 'pubmed']:
         dataset = Planetoid(root=root_path, name=name, transform=T.NormalizeFeatures())
@@ -242,7 +236,7 @@ def get_dataset(name):
         dataset = WikipediaNetwork(root=root_path, name=name, transform=T.NormalizeFeatures())
     elif name in ['actor']:
         dataset = Actor(root=root_path, transform=T.NormalizeFeatures())
-    # 对于 WebKB 数据集，使用 PyG 内置的 WebKB，同时保证存储在 "../data/<name>" 下
+  
     elif name in ['texas', 'cornell']:
         dataset = WebKB(root=os.path.join(root_path, name), name=name, transform=T.NormalizeFeatures())
     else:
