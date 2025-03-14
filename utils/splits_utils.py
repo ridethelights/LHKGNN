@@ -96,15 +96,6 @@ def idx_split(idx, ratio, seed=0):
     idx1, idx2 = idx[idx1_idx], idx[idx2_idx]
     return idx1, idx2
 
-def graph_split(idx_train, idx_val, idx_test, rate, seed=0):
-    idx_test_ind, idx_test_tran = idx_split(idx_test, rate, seed)
-    idx_obs = torch.cat([idx_train, idx_val, idx_test_tran])
-    M1, M2 = idx_train.shape[0], idx_val.shape[0]
-    obs_idx_all = torch.arange(idx_obs.shape[0])
-    obs_idx_train = obs_idx_all[:M1]
-    obs_idx_val = obs_idx_all[M1 : M1 + M2]
-    obs_idx_test = obs_idx_all[M1 + M2 :]
-    return obs_idx_train, obs_idx_val, obs_idx_test, idx_obs, idx_test_ind
 
 
 
