@@ -10,7 +10,7 @@ def parse_args():
         description="NGHD Node-Level Heat Diffusion Model Training Experiment"
     )
     parser.add_argument("--dataset", type=str, default="citeseer",
-                        help="Name of the dataset (e.g., cora)")
+                        help="Name of the dataset (e.g., CiteSeer)")
     parser.add_argument("--epochs", type=int, default=1000,
                         help="Number of training epochs")
     parser.add_argument("--lr", type=float, default=0.01,
