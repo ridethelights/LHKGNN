@@ -121,7 +121,7 @@ class GraphHeat(nn.Module):
         self.theta_hidden = nn.Parameter(torch.randn(hidden_channels, out_channels))
         self.theta_heat2  = nn.Parameter(torch.randn(hidden_channels, out_channels))
         
-        # t为全局扩散参数（标量），可训练
+
         self.t = nn.Parameter(torch.tensor(s))
         self.K = K
 
@@ -397,7 +397,7 @@ class HeatKernelLayer(nn.Module):
         super(HeatKernelLayer, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.t = t  # 此处 t 为常数，可改为 nn.Parameter 实现可学习
+        self.t = t  
         self.use_chebyshev = use_chebyshev
         self.K = K
         self.linear = nn.Linear(in_channels, out_channels)
@@ -416,7 +416,7 @@ class HeatKernelLayer(nn.Module):
         
 
         deg = torch.sparse.sum(adj, dim=1).to_dense()
-        # 计算 D^{-1/2}
+
         deg_inv_sqrt = torch.pow(deg, -0.5)
         deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0.0
         D_inv_sqrt = torch.diag(deg_inv_sqrt)
@@ -424,7 +424,7 @@ class HeatKernelLayer(nn.Module):
 
         A_dense = adj.to_dense()
         A_norm = D_inv_sqrt @ A_dense @ D_inv_sqrt
-        # 归一化拉普拉斯 L = I - A_norm
+   
         L = torch.eye(N, device=device) - A_norm
         
 
