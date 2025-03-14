@@ -24,7 +24,7 @@ from scipy.linalg import expm
 from parser import parse_args
 from utils.splits_utils import random_planetoid_splits
 import model  
-from baselines import *
+from torch_geometric.utils import remove_self_loops
 def fix_random(seed_val):
     torch.manual_seed(seed_val)
     np.random.seed(seed_val)
@@ -85,7 +85,7 @@ def main():
     if not hasattr(data_obj, "train_mask"):
         num_classes = int(data_obj.y.max().item() + 1)
         data_obj, _ = random_planetoid_splits(data_obj, num_classes=num_classes,
-                                               percls_trn=22, val_lb=37, Flag=0)
+                                               percls_trn=13, val_lb=84, Flag=0)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     data_obj = data_obj.to(device)
