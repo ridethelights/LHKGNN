@@ -1,5 +1,5 @@
 # LHK-GNN
-### This repository contains the code for the paper "Localized Heat Kernel for Graph Neural Networks".
+### This repository contains the code for the paper "Localized Heat Kernel for Graph Neural Networks" (ECML-PKDD 2025).
 
 # Requirement
 ### Tested with Python 3.10.9 and PyTorch 2.0.1 (Cuda 11.7).
